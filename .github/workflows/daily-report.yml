@@ -1,9 +1,6 @@
 name: 全球全行业每日情报
 
 on:
-  push:
-    paths:
-      - '.github/workflows/daily-report.yml'
   schedule:
     # 每天北京时间 08:17 / UTC 00:17，避开整点高峰
     - cron: "17 0 * * *"
@@ -33,6 +30,7 @@ jobs:
       FORCE_REPORT: ${{ github.event.inputs.force == 'true' && '1' || '0' }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-4.1-mini' }}
+      OPENAI_API_URL: ${{ vars.OPENAI_API_URL || 'https://api.openai.com/v1/chat/completions' }}
       SMTP_HOST: ${{ vars.SMTP_HOST || 'smtp.qq.com' }}
       SMTP_PORT: ${{ vars.SMTP_PORT || '465' }}
       SMTP_USER: ${{ secrets.SMTP_USER }}
