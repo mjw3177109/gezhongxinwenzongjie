@@ -66,7 +66,7 @@ jobs:
           git add reports/
           if ! git diff --cached --quiet; then
             git commit -m "data: archive daily global intelligence report"
-            git push
+            git push origin HEAD:main
           else
             echo "当日报告未变化，无需提交"
           fi
@@ -79,7 +79,7 @@ jobs:
           git add reports/
           if ! git diff --cached --quiet; then
             git commit -m "data: record daily email delivery receipt"
-            git push
+            git push origin HEAD:main
           else
             echo "已记录成功发送，无需重复提交"
           fi
