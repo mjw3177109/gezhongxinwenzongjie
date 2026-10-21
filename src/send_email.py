@@ -78,8 +78,8 @@ def deliver() -> int:
     except ValueError:
         print("[ERROR] SMTP_PORT 必须是数字", file=sys.stderr)
         return 2
-    sender = os.getenv("EMAIL_FROM", username).strip()
-    recipient_string = os.getenv("EMAIL_TO", username).strip()
+    sender = (os.getenv("EMAIL_FROM") or username).strip()
+    recipient_string = (os.getenv("EMAIL_TO") or username).strip()
     recipients = [r.strip() for r in re.split(r"[,;]", recipient_string) if r.strip()]
     if not username or not password or not host or not sender or not recipients:
         print("[ERROR] 尚未配置 SMTP_USER、SMTP_PASSWORD 等邮件参数；日报已归档，但邮件没有发送。",
