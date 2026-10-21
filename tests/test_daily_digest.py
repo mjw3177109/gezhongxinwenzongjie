@@ -64,7 +64,6 @@ class NewsDigestTests(unittest.TestCase):
         self.assertIn("https://example.org/story", output)
         self.assertIn("Example Publisher", output)
         self.assertIn("timed out", output)
-        self.assertIn("AI 深度", output) if False else None
 
     def test_report_path_and_mime_message(self):
         with tempfile.TemporaryDirectory() as temp:
