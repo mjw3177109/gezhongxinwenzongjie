@@ -1,6 +1,9 @@
 name: 全球全行业每日情报
 
 on:
+  push:
+    paths:
+      - '.github/workflows/daily-report.yml'
   schedule:
     # 每天北京时间 08:17 / UTC 00:17，避开整点高峰
     - cron: "17 0 * * *"
@@ -21,6 +24,7 @@ concurrency:
 
 jobs:
   collect_archive_mail:
+    if: ${{ github.event_name != 'push' || contains(github.event.head_commit.message, '[run-daily-now]') }}
     name: 采集 → 验证 → 归档 → 邮件
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -57,12 +61,26 @@ jobs:
 
       - name: 先提交日报到 GitHub
         run: |
+          set -e
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # 先同步远端，避免任务运行期间其他代码提交导致非快进推送失败。
+          git fetch origin main
+          git rebase origin/main
           git add reports/
           if ! git diff --cached --quiet; then
             git commit -m "data: archive daily global intelligence report"
-            git push origin HEAD:main
+            for attempt in 1 2 3; do
+              if git push origin HEAD:main; then
+                echo "日报归档已推送。"
+                exit 0
+              fi
+              echo "推送冲突，第 $attempt 次同步后重试。"
+              git fetch origin main
+              git rebase origin/main
+            done
+            echo "多次同步后仍无法推送日报。" >&2
+            exit 1
           else
             echo "当日报告未变化，无需提交"
           fi
@@ -72,10 +90,21 @@ jobs:
 
       - name: 记录成功投递标记并推送
         run: |
+          set -e
           git add reports/
           if ! git diff --cached --quiet; then
             git commit -m "data: record daily email delivery receipt"
-            git push origin HEAD:main
+            for attempt in 1 2 3; do
+              if git push origin HEAD:main; then
+                echo "邮件成功标记已归档。"
+                exit 0
+              fi
+              echo "回执推送冲突，第 $attempt 次同步后重试。"
+              git fetch origin main
+              git rebase origin/main
+            done
+            echo "多次同步后仍无法推送邮件回执。" >&2
+            exit 1
           else
             echo "已记录成功发送，无需重复提交"
           fi
