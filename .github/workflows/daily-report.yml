@@ -1,0 +1,95 @@
+name: 全球全行业每日情报
+
+on:
+  schedule:
+    # 每天北京时间 08:17 / UTC 00:17，避开整点高峰
+    - cron: "17 0 * * *"
+  workflow_dispatch:
+    inputs:
+      report_date:
+        description: "指定报告日期 YYYY-MM-DD；默认使用北京时间当天"
+        required: false
+        type: string
+      force:
+        description: "同日已有报告时重新抓取（一般无需打开）"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: global-daily-report
+  cancel-in-progress: false
+
+jobs:
+  collect_archive_mail:
+    name: 采集 → 验证 → 归档 → 邮件
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TZ: Asia/Shanghai
+      REPORT_TIMEZONE: Asia/Shanghai
+      REPORT_DATE: ${{ github.event.inputs.report_date || '' }}
+      FORCE_REPORT: ${{ github.event.inputs.force == 'true' && '1' || '0' }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-4.1-mini' }}
+      SMTP_HOST: ${{ vars.SMTP_HOST || 'smtp.qq.com' }}
+      SMTP_PORT: ${{ vars.SMTP_PORT || '465' }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+      EMAIL_TO: ${{ secrets.EMAIL_TO }}
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: 配置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 运行单元测试
+        run: python -m unittest discover -s tests -v
+
+      - name: 实际抓取并生成日报
+        run: python src/daily_digest.py
+
+      - name: 先提交日报到 GitHub
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/
+          if ! git diff --cached --quiet; then
+            git commit -m "data: archive daily global intelligence report"
+            git push
+          else
+            echo "当日报告未变化，无需提交"
+          fi
+
+      - name: SMTP 投递日报邮件（未配置会明确失败）
+        run: python src/send_email.py
+
+      - name: 记录成功投递标记并推送
+        run: |
+          git add reports/
+          if ! git diff --cached --quiet; then
+            git commit -m "data: record daily email delivery receipt"
+            git push
+          else
+            echo "已记录成功发送，无需重复提交"
+          fi
+
+      - name: 输出本次执行链接
+        if: always()
+        run: |
+          {
+            echo "## 全球日报自动化"
+            echo "仓库：[日报归档](https://github.com/${{ github.repository }}/tree/main/reports)"
+            echo "执行状态：${{ job.status }}"
+            echo "北京时间每天 08:17，支持手动触发；邮件发送需要 SMTP Secrets。"
+          } >> "$GITHUB_STEP_SUMMARY"
