@@ -1,0 +1,338 @@
+{
+  "version": 1,
+  "window_hours": 24,
+  "max_items_per_feed": 25,
+  "report_items_per_topic": 4,
+  "topics": [
+    {
+      "id": "world",
+      "label": "国际政治与外交",
+      "query": "international diplomacy summit sanctions geopolitics",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "macroeconomy",
+      "label": "全球宏观经济",
+      "query": "inflation central bank GDP jobs economy",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "finance",
+      "label": "银行与金融市场",
+      "query": "banking bonds financial markets central banks",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "capital",
+      "label": "资本市场与投融资",
+      "query": "IPO mergers venture capital investment stocks",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "ai",
+      "label": "人工智能",
+      "query": "artificial intelligence generative AI models regulation",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "software",
+      "label": "软件与互联网",
+      "query": "software cloud internet platforms technology",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "semiconductors",
+      "label": "芯片与半导体",
+      "query": "semiconductor chip foundry lithography",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "cybersecurity",
+      "label": "网络安全",
+      "query": "cybersecurity data breach ransomware vulnerability",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "telecom",
+      "label": "通信与数字基础设施",
+      "query": "telecom 5G 6G datacenter connectivity",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "energy",
+      "label": "能源与电力",
+      "query": "oil gas electricity nuclear energy renewables",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "climate",
+      "label": "气候环境与ESG",
+      "query": "climate change carbon emissions environment policy",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "manufacturing",
+      "label": "工业与先进制造",
+      "query": "manufacturing factory automation robotics industrial",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "supply_chain",
+      "label": "贸易与供应链",
+      "query": "global trade tariffs supply chain exports imports",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "transport",
+      "label": "交通物流与航运",
+      "query": "shipping logistics aviation rail freight transport",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "auto",
+      "label": "汽车与新能源车",
+      "query": "automotive electric vehicles battery car industry",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "space",
+      "label": "航天航空",
+      "query": "space launch satellite aerospace exploration",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "health",
+      "label": "医疗健康",
+      "query": "hospital public health health care medicine",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "pharma",
+      "label": "生物医药",
+      "query": "biotechnology pharmaceuticals clinical trial drug approval",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "science",
+      "label": "科学科研",
+      "query": "scientific discovery research physics chemistry biology",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "agriculture",
+      "label": "农业与食品",
+      "query": "agriculture crops food security farming food prices",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "retail",
+      "label": "零售与电商",
+      "query": "retail consumer ecommerce brands spending",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "property",
+      "label": "房地产与建筑",
+      "query": "housing property construction infrastructure",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "education",
+      "label": "教育与人才",
+      "query": "education university workforce skills employment",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "tourism",
+      "label": "旅游酒店与文旅",
+      "query": "tourism travel hospitality hotels tourism policy",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "media",
+      "label": "媒体广告与娱乐",
+      "query": "media entertainment streaming film music advertising",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "games",
+      "label": "游戏电竞",
+      "query": "video games gaming esports game industry",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "sports",
+      "label": "体育产业",
+      "query": "sports business clubs leagues sponsorship media rights",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "legal",
+      "label": "法律监管与公共政策",
+      "query": "regulation legislation antitrust court decision policy",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "defense",
+      "label": "国防与安全产业",
+      "query": "defense industry military procurement security policy",
+      "edition": "en",
+      "kind": "industry"
+    },
+    {
+      "id": "china",
+      "label": "中国大陆",
+      "query": "中国 科技 经济 政策 产业",
+      "edition": "zh",
+      "kind": "region"
+    },
+    {
+      "id": "japan",
+      "label": "日本",
+      "query": "日本 経済 技術 産業 政策",
+      "edition": "jp",
+      "kind": "region"
+    },
+    {
+      "id": "korea",
+      "label": "韩国",
+      "query": "한국 경제 산업 기술 정부",
+      "edition": "kr",
+      "kind": "region"
+    },
+    {
+      "id": "southeast_asia",
+      "label": "东南亚",
+      "query": "ASEAN southeast Asia economy technology investment",
+      "edition": "en",
+      "kind": "region"
+    },
+    {
+      "id": "india",
+      "label": "印度",
+      "query": "India economy technology industry policy",
+      "edition": "en",
+      "kind": "region"
+    },
+    {
+      "id": "europe",
+      "label": "欧洲",
+      "query": "Europe EU industry economy regulation",
+      "edition": "en",
+      "kind": "region"
+    },
+    {
+      "id": "north_america",
+      "label": "北美",
+      "query": "United States Canada economy industry technology",
+      "edition": "en",
+      "kind": "region"
+    },
+    {
+      "id": "latin_america",
+      "label": "拉丁美洲",
+      "query": "América Latina economía industria tecnología",
+      "edition": "es",
+      "kind": "region"
+    },
+    {
+      "id": "middle_east",
+      "label": "中东",
+      "query": "Middle East economy energy technology investment",
+      "edition": "en",
+      "kind": "region"
+    },
+    {
+      "id": "africa",
+      "label": "非洲",
+      "query": "Africa economy infrastructure technology development",
+      "edition": "en",
+      "kind": "region"
+    },
+    {
+      "id": "oceania",
+      "label": "大洋洲",
+      "query": "Australia New Zealand economy industry technology",
+      "edition": "en",
+      "kind": "region"
+    }
+  ],
+  "direct_feeds": [
+    {
+      "id": "bbc_world",
+      "label": "BBC World",
+      "url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+      "topic_id": "world"
+    },
+    {
+      "id": "bbc_business",
+      "label": "BBC Business",
+      "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+      "topic_id": "macroeconomy"
+    },
+    {
+      "id": "bbc_technology",
+      "label": "BBC Technology",
+      "url": "https://feeds.bbci.co.uk/news/technology/rss.xml",
+      "topic_id": "software"
+    },
+    {
+      "id": "bbc_health",
+      "label": "BBC Health",
+      "url": "https://feeds.bbci.co.uk/news/health/rss.xml",
+      "topic_id": "health"
+    },
+    {
+      "id": "guardian_world",
+      "label": "The Guardian World",
+      "url": "https://www.theguardian.com/world/rss",
+      "topic_id": "world"
+    },
+    {
+      "id": "guardian_business",
+      "label": "The Guardian Business",
+      "url": "https://www.theguardian.com/business/rss",
+      "topic_id": "finance"
+    },
+    {
+      "id": "guardian_environment",
+      "label": "The Guardian Environment",
+      "url": "https://www.theguardian.com/environment/rss",
+      "topic_id": "climate"
+    },
+    {
+      "id": "guardian_technology",
+      "label": "The Guardian Technology",
+      "url": "https://www.theguardian.com/technology/rss",
+      "topic_id": "software"
+    }
+  ]
+}
