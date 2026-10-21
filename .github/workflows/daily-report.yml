@@ -1,15 +1,14 @@
 name: 全球全行业每日情报
 
 on:
+  push:
+    paths:
+      - '.github/workflows/daily-report.yml'
   schedule:
     # 每天北京时间 08:17 / UTC 00:17，避开整点高峰
     - cron: "17 0 * * *"
   workflow_dispatch:
     inputs:
-      report_date:
-        description: "指定报告日期 YYYY-MM-DD；默认使用北京时间当天"
-        required: false
-        type: string
       force:
         description: "同日已有报告时重新抓取（一般无需打开）"
         required: false
@@ -31,7 +30,6 @@ jobs:
     env:
       TZ: Asia/Shanghai
       REPORT_TIMEZONE: Asia/Shanghai
-      REPORT_DATE: ${{ github.event.inputs.report_date || '' }}
       FORCE_REPORT: ${{ github.event.inputs.force == 'true' && '1' || '0' }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-4.1-mini' }}
