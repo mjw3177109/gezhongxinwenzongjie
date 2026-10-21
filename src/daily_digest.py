@@ -246,7 +246,7 @@ def render_report(date_text: str, now: datetime, config: dict, articles: list[di
     lines = [
         f"# 全球全行业情报日报 · {date_text}",
         "",
-        f"> 截止：{now.strftime('%Y-%m-%d %H:%M %Z')}；观察窗口：过去 {config.get('window_hours', 24)} 小时。",
+        f"> 截止：{now.strftime('%Y-%m-%d %H:%M')} 北京时间（Asia/Shanghai）；观察窗口：过去 {config.get('window_hours', 24)} 小时。",
         f"> 唯一报道：**{len(articles)}** 篇；成功采集来源入口：**{succeeded}/{total_feeds}**；失败：**{len(errors)}**。",
         "> 来源以原始发布方为准；Google News 链接可能跳转至聚合页面。报道仅依据公开 RSS 标题/摘要整理，不等于独立事实核查。",
         "",
