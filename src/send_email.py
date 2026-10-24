@@ -40,19 +40,24 @@ def html_report(markdown: str) -> str:
 
 
 def build_message(report_date: str, folder: Path, sender: str, recipients: list[str]) -> EmailMessage:
-    report = (folder / "report.md").read_text(encoding="utf-8")
+    full_report = (folder / "report.md").read_text(encoding="utf-8")
+    brief_file = folder / "investment-brief.md"
+    report = brief_file.read_text(encoding="utf-8") if brief_file.exists() else full_report
     repo_link = (
         "https://github.com/mjw3177109/gezhongxinwenzongjie/tree/main/reports/"
         + report_date.replace("-", "/")
     )
     message = EmailMessage()
-    message["Subject"] = f"【全球行业情报日报】{report_date} | Global Daily Intelligence"
+    message["Subject"] = f"【全球投资情报晨报】{report_date} | 事件总结·机会风险·大师框架"
     message["From"] = sender
     message["To"] = ", ".join(recipients)
     message.set_content(report + "\n\nGitHub 归档：" + repo_link + "\n")
     message.add_alternative(html_report(report) + "\n<!-- " + html.escape(repo_link) + " -->", subtype="html")
-    message.add_attachment(report.encode("utf-8"), maintype="text", subtype="markdown",
+    message.add_attachment(full_report.encode("utf-8"), maintype="text", subtype="markdown",
                            filename=f"Global_Daily_Report_{report_date}.md")
+    if brief_file.exists():
+        message.add_attachment(report.encode("utf-8"), maintype="text", subtype="markdown",
+                               filename=f"Investment_Brief_{report_date}.md")
     csv_file = folder / "sources.csv"
     if csv_file.exists():
         message.add_attachment(csv_file.read_bytes(), maintype="text", subtype="csv",
