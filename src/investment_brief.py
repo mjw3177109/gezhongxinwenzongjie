@@ -175,6 +175,12 @@ def fetch_evidence(article: dict) -> dict:
     item["evidence_type"] = "rss_excerpt" if len(source_clean) >= 85 and source_clean.lower() != item["title"].lower() else "headline_only"
     if item["evidence_type"] == "headline_only":
         item["evidence"] = ""
+    if (urllib.parse.urlsplit(item["url"]).hostname or "").lower() == "news.google.com":
+        # Google News RSS descriptions often aggregate unrelated links and are not the article body.
+        # Never classify an aggregator snippet as verified publisher text.
+        item["evidence"] = ""
+        item["evidence_type"] = "headline_only"
+        return item
     if not is_safe_public_url(item["url"]):
         return item
     try:
@@ -349,7 +355,7 @@ def investment_brief(articles: list[dict], topics: list[dict], date_text: str,
         if excerpt:
             # Legal/reader-safe short evidence quote; AI uses longer transient in-memory text.
             lines.append("- **可核验内容片段（原语种）：** " +
-                         excerpt[:290].replace("\n", " ") + ("…" if len(excerpt) > 290 else ""))
+                         excerpt[:190].replace("\n", " ") + ("…" if len(excerpt) > 190 else ""))
         else:
             lines.append("- **内容状态：** 仅有新闻标题，无法负责任地推断具体报道内容。")
         lines += [
