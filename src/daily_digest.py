@@ -21,6 +21,8 @@ from email.utils import parsedate_to_datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from investment_brief import investment_brief
+
 ROOT = Path(__file__).resolve().parents[1]
 TIMEZONE_NAME = os.getenv("REPORT_TIMEZONE", "Asia/Shanghai")
 EDITIONS = {
@@ -328,10 +330,16 @@ def run() -> int:
     articles, errors, succeeded = collect_news(config, now)
     if not articles:
         raise RuntimeError("所有有效报道为 0，拒绝归档虚假空报告；请检查网络、RSS 或时间窗口")
-    names = {t["id"]: t["label"] for t in config["topics"]}
-    insights, ai_note = ai_insights(articles, names)
-    content = render_report(date_text, now, config, articles, errors, succeeded, insights, ai_note)
+    # Deep investment synthesis uses actual publisher excerpts rather than title-only guesses.
+    brief, investment_metadata = investment_brief(articles, config["topics"], date_text,
+                                                    max_items=int(os.getenv("INVESTMENT_ARTICLES", "26")))
+    insight_note = ("详见报告开头的投资委员会晨报；" +
+                    ("模型已生成跨行业判断" if investment_metadata["llm_success"]
+                     else "模型尚未配置/不可用，不能虚构专家结论"))
+    appendix = render_report(date_text, now, config, articles, errors, succeeded, "", insight_note)
+    content = brief + "\n---\n\n" + appendix
     folder.mkdir(parents=True, exist_ok=True)
+    (folder / "investment-brief.md").write_text(brief, encoding="utf-8")
     (folder / "report.md").write_text(content, encoding="utf-8")
     payload = {
         "report_date": date_text,
@@ -340,7 +348,7 @@ def run() -> int:
         "unique_articles": len(articles),
         "feed_success": succeeded,
         "feed_failure": len(errors),
-        "ai_note": ai_note,
+        "investment_research": investment_metadata,
         "errors": errors,
         "topics": config["topics"],
         "articles": articles,
