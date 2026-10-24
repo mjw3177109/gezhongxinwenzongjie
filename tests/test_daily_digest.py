@@ -65,6 +65,22 @@ class NewsDigestTests(unittest.TestCase):
         self.assertIn("Example Publisher", output)
         self.assertIn("timed out", output)
 
+    def test_investor_email_has_three_attachments_and_honest_subject(self):
+        with tempfile.TemporaryDirectory() as temp:
+            folder = report_path("2026-10-24", Path(temp))
+            folder.mkdir(parents=True)
+            (folder / "investment-brief.md").write_text(
+                "# 投资委员会晨报\\n\\n## 投资结论状态：尚未完成模型深度归纳", encoding="utf-8")
+            (folder / "report.md").write_text("# 全球日报", encoding="utf-8")
+            (folder / "sources.csv").write_text("source,url\\n", encoding="utf-8")
+            (folder / "data.json").write_text(
+                json.dumps({"investment_research": {"llm_success": False}}), encoding="utf-8")
+            message = build_message("2026-10-24", folder, "sender@example.com",
+                                    ["recipient@example.com"])
+            self.assertEqual(len(list(message.iter_attachments())), 3)
+            self.assertIn("待配置", message["Subject"])
+            self.assertIn("尚未完成模型", message.get_body(preferencelist=("plain",)).get_content())
+
     def test_report_path_and_mime_message(self):
         with tempfile.TemporaryDirectory() as temp:
             folder = report_path("2026-10-21", Path(temp))
