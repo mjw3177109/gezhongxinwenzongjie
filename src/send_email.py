@@ -48,7 +48,16 @@ def build_message(report_date: str, folder: Path, sender: str, recipients: list[
         + report_date.replace("-", "/")
     )
     message = EmailMessage()
-    message["Subject"] = f"【全球投资情报晨报】{report_date} | 事件总结·机会风险·大师框架"
+    metadata_path = folder / "data.json"
+    if brief_file.exists() and metadata_path.exists():
+        analysis_ready = json.loads(metadata_path.read_text(encoding="utf-8")).get(
+            "investment_research", {}).get("llm_success", False)
+    else:
+        analysis_ready = False
+    if brief_file.exists() and not analysis_ready:
+        message["Subject"] = f"【全球资讯证据版·AI投资分析待配置】{report_date}"
+    else:
+        message["Subject"] = f"【全球投资情报晨报】{report_date} | 事件总结·机会风险·大师框架"
     message["From"] = sender
     message["To"] = ", ".join(recipients)
     message.set_content(report + "\n\nGitHub 归档：" + repo_link + "\n")
