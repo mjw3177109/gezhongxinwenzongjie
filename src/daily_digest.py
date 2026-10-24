@@ -3,10 +3,8 @@
 from __future__ import annotations
 
 import csv
-import difflib
 import hashlib
 import html
-import io
 import json
 import os
 import re
@@ -179,64 +177,6 @@ def collect_news(config: dict, now: datetime) -> tuple[list[dict], list[dict], i
 
 def safe_md(text: str) -> str:
     return (text or "").replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]").replace("|", "\\|").replace("\n", " ")
-
-
-def ai_insights(articles: list[dict], topic_names: dict) -> tuple[str, str]:
-    api_key = os.getenv("OPENAI_API_KEY", "").strip()
-    if not api_key:
-        return "", "未配置 OPENAI_API_KEY，深度研判未启用"
-    samples = []
-    per_topic = {}
-    for item in articles:
-        topic = item["topics"][0]
-        if per_topic.get(topic, 0) >= 3 or len(samples) >= 95:
-            continue
-        per_topic[topic] = per_topic.get(topic, 0) + 1
-        samples.append({
-            "ref": item["id"], "title": item["title"], "source": item["source"],
-            "topic": topic_names.get(topic, topic), "time": item["published_utc"],
-        })
-    if len(samples) < 5:
-        return "", "有效报道不足，未生成 AI 深度研判"
-    messages = [
-        {"role": "system", "content": (
-            "你是审慎的中文全球产业情报分析员。你只看到了标题、媒体及时间，并未核验全文。"
-            "基于输入证据，概括最多6个跨行业观察及最多5个下阶段关注点。"
-            "每条陈述必须注明至少一个有效 [REF:文章编号]，不要臆测数据、引语、因果、股价或内幕，"
-            "不要把媒体标题当作已独立核实的事实。信息矛盾时指出未核实，避免投资建议。"
-            "只输出 Markdown，不要输出报告总标题。"
-        )},
-        {"role": "user", "content": json.dumps(samples, ensure_ascii=False)},
-    ]
-    body = json.dumps({
-        "model": os.getenv("OPENAI_MODEL", "gpt-4.1-mini"),
-        "temperature": 0.2,
-        "max_tokens": 3200,
-        "messages": messages,
-    }, ensure_ascii=False).encode("utf-8")
-    url = os.getenv("OPENAI_API_URL", "https://api.openai.com/v1/chat/completions")
-    if not url.startswith("https://"):
-        return "", "LLM 地址必须为 HTTPS"
-    try:
-        req = urllib.request.Request(url, data=body, headers={
-            "Authorization": "Bearer " + api_key,
-            "Content-Type": "application/json",
-        }, method="POST")
-        with urllib.request.urlopen(req, timeout=100) as response:
-            data = json.load(response)
-        result = data["choices"][0]["message"]["content"]
-        if not isinstance(result, str):
-            raise ValueError("LLM 返回内容不是文本")
-        refs = {item["id"]: item for item in articles}
-        references = re.findall(r"\[REF:([a-f0-9]{12})\]", result)
-        if not references or any(ref not in refs for ref in references):
-            raise ValueError("AI 引用缺失或包含未知编号")
-        for ref in set(references):
-            result = result.replace(f"[REF:{ref}]", f"[来源]({refs[ref]['url']})")
-        return result.strip()[:14000], "AI 洞察基于媒体标题，不代表全文核实"
-    except Exception as exc:
-        print(f"[WARN] AI 洞察失败: {type(exc).__name__}", file=sys.stderr)
-        return "", f"AI 深度研判未生成（{type(exc).__name__}），事实型简报不受影响"
 
 
 def render_report(date_text: str, now: datetime, config: dict, articles: list[dict],
