@@ -1,0 +1,47 @@
+name: Investor Brief Live Smoke Test
+
+on:
+  push:
+    paths:
+      - '.github/workflows/investor-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[smoke]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test real publicly accessible RSS and article evidence (no email, no AI cost)
+        run: |
+          python - <<'PY'
+          import json
+          import sys
+          from datetime import datetime, timezone
+          from pathlib import Path
+          sys.path.insert(0, "src")
+          from daily_digest import read_url, parse_rss
+          from investment_brief import enrich_articles, investment_brief
+          feed = read_url("https://feeds.bbci.co.uk/news/business/rss.xml")
+          rows = parse_rss(feed, "finance", "BBC Business",
+                           datetime.now(timezone.utc), 48, 15)
+          assert len(rows) >= 2, "Not enough current stories to verify"
+          sampled = enrich_articles(rows[:6])
+          metrics = {kind:sum(item["evidence_type"] == kind for item in sampled)
+                     for kind in ("article_excerpt", "rss_excerpt", "headline_only")}
+          content, metadata = investment_brief(rows, [
+              {"id":"finance", "label":"银行与金融市场", "kind":"industry"}
+          ], datetime.now(timezone.utc).strftime("%Y-%m-%d"), max_items=4)
+          assert "## 证据底稿" in content
+          assert metadata["selected_count"] >= 1
+          assert "全球投资委员会情报晨报" in content
+          print("LIVE_SMOKE_PASS", json.dumps({"rss":len(rows),"evidence":metrics,
+                  "investor_items":metadata["selected_count"]},ensure_ascii=False))
+          PY
