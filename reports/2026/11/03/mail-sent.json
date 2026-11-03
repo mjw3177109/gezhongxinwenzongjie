@@ -1,0 +1,7 @@
+{
+  "report_date": "2026-11-03",
+  "status": "sent",
+  "sent_at_utc": "2026-11-03T06:45:06.545054+00:00",
+  "recipient_count": 1,
+  "method": "SMTP TLS"
+}
